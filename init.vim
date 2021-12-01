@@ -15,27 +15,33 @@ let mapleader=','
 
 call plug#begin('~/.local/share/nvim/plugged')
 
-Plug 'alexlafroscia/postcss-syntax.vim'
+" - to file browse
+Plug 'tpope/vim-vinegar'
 
-Plug 'gcmt/taboo.vim'
-
-Plug 'AndrewRadev/splitjoin.vim'
+Plug 'jiangmiao/auto-pairs'
 Plug 'tpope/vim-surround'
 
-" syntax highlighting
-""""""""""""""""""""""""""""""""""""""""""""
-Plug 'neomake/neomake'
-" config
-let g:neomake_javascript_enabled_makers = ['eslint']
-" let g:neomake_javascript_eslint_maker
-autocmd BufWritePost,BufEnter * Neomake
-
+" javascript
 Plug 'pangloss/vim-javascript'
-augroup javascript_folding
-  au!
-  au FileType javascript setlocal foldmethod=syntax
-augroup END
+Plug 'leafgarland/typescript-vim'
+Plug 'peitalin/vim-jsx-typescript'
+Plug 'styled-components/vim-styled-components', { 'branch': 'main' }
 
+" completion
+" https://github.com/neoclide/coc.nvim
+Plug 'neoclide/coc.nvim', {'branch': 'release'}
+
+" linting
+Plug 'neoclide/coc-eslint'
+Plug 'neoclide/coc-prettier'
+
+if isdirectory('./node_modules') && isdirectory('./node_modules/prettier')
+  let g:coc_global_extensions += ['coc-prettier']
+endif
+
+if isdirectory('./node_modules') && isdirectory('./node_modules/eslint')
+  let g:coc_global_extensions += ['coc-eslint']
+endif
 
 " colorscheme
 """"""""""""""""""""""""""""""""""""""""""""
@@ -59,89 +65,6 @@ nnoremap <leader>t :FZF<cr>
 nnoremap <leader>b :FZFBuffers<cr>
 
 Plug 'numkil/ag.nvim'
-
-" file browsing
-""""""""""""""""""""""""""""""""""""""""""""
-Plug 'tpope/vim-vinegar'
-
-" autocomplete
-""""""""""""""""""""""""""""""""""""""""""""
-Plug 'ervandew/supertab'
-"let g:SuperTabDefaultCompletionType = "<c-n>" " Make the tabing on completion menu go from top to bottom
-"let g:SuperTabClosePreviewOnPopupClose = 1 " Close the preview when completion ends
-Plug 'Shougo/deoplete.nvim', {'do': ':UpdateRemotePlugins'}
-"let g:deoplete#enable_at_startup = 1
-"let g:deoplete#enable_smart_case = 1
-"inoremap <silent><expr> <TAB>
-"\ pumvisible() ? "\<C-n>" :
-"\ <SID>check_back_space() ? "\<TAB>" :
-"\ deoplete#mappings#manual_complete()
-"function! s:check_back_space() abort "{{{
-"let col = col('.') - 1
-"return !col || getline('.')[col - 1]  =~ '\s'
-"endfunction"}}}
-
-" Make <CR> smart
-"let g:ulti_expand_res = 0
-"function! Ulti_ExpandOrEnter()
-"  " First try to expand a snippet
-"  call UltiSnips#ExpandSnippet()
-"  if g:ulti_expand_res
-"    " if successful, just return
-"    return ''
-"  elseif pumvisible()
-"    " if in completion menu - just close it and leave the cursor at the
-"    " end of the completion
-"    return deoplete#mappings#close_popup()
-"  else
-"    " otherwise, just do an "enter"
-"    return "\<return>"
-"  endif
-"endfunction
-"inoremap <enter> <C-R>=Ulti_ExpandOrEnter()<CR>
-
-" Enable tabbing and shift-tabbing through list of results
-"function! g:SmartShiftTab()
-"  if pumvisible()
-"    return SuperTab("n")
-"  else
-"    call UltiSnips#JumpForwards()
-"    if g:ulti_jump_forwards_res == 0
-"      return SuperTab("n")
-"    endif
-"    return ''
-"  endif
-"endfunction
-"
-"function! g:SmartTab()
-"  if pumvisible()
-"    return SuperTab("p")
-"  else
-"    call UltiSnips#JumpBackwards()
-"    if g:ulti_jump_backwards_res == 0
-"      return SuperTab("p")
-"    endif
-"    return ''
-"  endif
-"endfunction
-"inoremap <silent> <s-tab> <C-R>=g:SmartTab()<cr>
-"snoremap <silent> <s-tab> <Esc>:call g:SmartTab()<cr>
-"inoremap <silent> <tab> <C-R>=g:SmartShiftTab()<cr>
-"snoremap <silent> <tab> <Esc>:call g:SmartShiftTab()<cr>
-
-" terminal
-""""""""""""""""""""""""""""""""""""""""""""
-Plug 'kassio/neoterm'
-
-" close brackets
-""""""""""""""""""""""""""""""""""""""""""""
-Plug 'jiangmiao/auto-pairs'
-
-" syntax
-Plug 'sheerun/vim-polyglot'
-
-" html
-Plug 'alvan/vim-closetag'
 
 call plug#end()
 
@@ -216,6 +139,10 @@ set fillchars+=vert:\
 " binds
 "//////////////////////////////////////////
 
+" splits
+nnoremap <silent>ss :split<cr>
+nnoremap <silent>vv :vsplit<cr>
+
 vnoremap  <leader>y  "+y
 nnoremap  <leader>Y  "+yg_
 nnoremap  <leader>y  "+y
@@ -231,24 +158,12 @@ nnoremap <c-j> <c-w>j
 nnoremap <c-k> <c-w>k
 nnoremap <c-l> <c-w>l
 
-" t nav
-" tnoremap <esc><esc> <c-\><c-n><c-w><c-p>
-
-" Window split settings
-highlight TermCursor ctermfg=red guifg=red
-set splitbelow
-set splitright
-
-" Terminal settings
-" splits
-nnoremap <silent>ss :split<cr>
-nnoremap <silent>vv :vsplit<cr>
-
 " command
 cnoremap <c-h> <left>
 cnoremap <c-j> <down>
 cnoremap <c-k> <up>
 cnoremap <c-l> <right>
+
 
 "//////////////////////////////////////////
 " functions
@@ -290,53 +205,3 @@ function! CloseWindowOrKillBuffer()
     bdelete
   endif
 endfunction
-
-" workspace
-
-" Workspace Setup
-" ----------------
-function! DefaultWorkspace()
-endfunction
-command! -register DefaultWorkspace call DefaultWorkspace()
-
-
-
-" Window navigation function
-" Make ctrl-h/j/k/l move between windows and auto-insert in terminals
-"func! s:mapMoveToWindowInDirection(direction)
-"  func! s:maybeInsertMode(direction)
-"    stopinsert
-"    execute "wincmd" a:direction
-"
-"    if &buftype == 'terminal'
-"      startinsert!
-"    endif
-"  endfunc
-"
-"  execute "tnoremap" "<silent>" "<C-" . a:direction . ">"
-"        \ "<C-\\><C-n>"
-"        \ ":call <SID>maybeInsertMode(\"" . a:direction . "\")<CR>"
-"  execute "nnoremap" "<silent>" "<C-" . a:direction . ">"
-"        \ ":call <SID>maybeInsertMode(\"" . a:direction . "\")<CR>"
-"endfunc
-"for dir in ["h", "j", "l", "k"]
-"  call s:mapMoveToWindowInDirection(dir)
-"endfor
-
-" visor style terminal buffer
-let s:visorbuff = 0
-function! VisorBuff()
-  topleft 30 split
-  try
-    exe 'buffer' . s:visorbuff
-    startinsert
-  catch
-    terminal
-    let s:visorbuff=bufnr('%')
-    start
-    tnoremap <buffer> <c-t> <C-\><C-n>:close<cr>
-  endtry
-endfunction
-
-com! VisorBuff call VisorBuff()
-nnoremap <c-t> :VisorBuff<cr>
